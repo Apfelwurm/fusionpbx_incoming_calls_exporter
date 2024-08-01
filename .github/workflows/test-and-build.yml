@@ -93,7 +93,7 @@ jobs:
     - name: Create changelog
       shell: bash
       run: |
-        git tag --sort=taggerdate | while read tag; do
+        git tag --sort=version:refname | while read tag; do
           echo "tag found"
           tag_date=$(git show -s --format=%ci $tag)
           tag_message=$(git for-each-ref --format='%(contents)' refs/tags/$tag | head -n 1)

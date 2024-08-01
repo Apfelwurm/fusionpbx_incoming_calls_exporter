@@ -130,9 +130,13 @@ jobs:
         dch --release ''
         cat debian/changelog
 
+
     - name: debian packaging
-      # run: cd build && dpkg-deb -b packageroot fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
-      run:  dpkg-buildpackage -us -uc 
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace debian:12 bash -c "
+          apt-get update && apt-get install -y devscripts debhelper dh-systemd &&
+          dpkg-buildpackage -us -uc
+        "
     
     - name: debian packaging - make src dir
       run: find -name '*.deb'

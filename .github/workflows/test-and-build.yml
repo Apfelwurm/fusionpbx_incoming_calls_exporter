@@ -65,8 +65,8 @@ jobs:
         tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
         name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
 
-    - name: replace version
-      run: sed -i 's|%%VERSION%%|${{ steps.generate_release_tag.outputs.next_release_tag }}|g' fusionpbx_incoming_calls_exporter.go
+    # - name: replace version
+    #   run: sed -i 's|%%VERSION%%|${{ steps.generate_release_tag.outputs.next_release_tag }}|g' fusionpbx_incoming_calls_exporter.go
 
     - name: go build, show checksums and publish 
       uses: wangyoucao577/go-release-action@v1
@@ -80,9 +80,9 @@ jobs:
         # extra_files: LICENSE README.md
     
     - name: debian packaging - Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y devscripts
-    - name: debian packaging - replace version
-      run: sed -i 's|%%VERSION%%|${{ steps.generate_release_tag.outputs.next_release_tag }}|g' debian/control
+      run: sudo apt-get update && sudo apt-get install -y devscripts debhelper dh-systemd
+    # - name: debian packaging - replace version
+    #   run: sed -i 's|%%VERSION%%|${{ steps.generate_release_tag.outputs.next_release_tag }}|g' debian/control
       
     - name: debian packaging - make src dir
       run: mkdir src

@@ -85,6 +85,20 @@ jobs:
       
     - name: debian packaging - copy fusionpbx_incoming_calls_exporter
       run: cp build-artifacts-*/fusionpbx_incoming_calls_exporter src/
+
+    - name: Get committer information
+      id: committer-info
+      run: |
+        echo "COMMITTER_NAME=$(git log -1 --pretty=format:'%an')" >> $GITHUB_ENV
+        echo "COMMITTER_EMAIL=$(git log -1 --pretty=format:'%ae')" >> $GITHUB_ENV
+
+    - name: Update changelog
+      run: |
+        export DEBEMAIL="${{ env.COMMITTER_EMAIL }}"
+        export DEBFULLNAME="${{ env.COMMITTER_NAME }}"
+        dch --create --package fusionpbx-incoming-calls-exporter --newversion ${{ steps.generate_release_tag.outputs.next_release_tag }} "Release ${{ steps.generate_release_tag.outputs.next_release_tag }}."
+        dch --release ''
+
     - name: debian packaging
       # run: cd build && dpkg-deb -b packageroot fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
       run:  dpkg-buildpackage -us -uc 

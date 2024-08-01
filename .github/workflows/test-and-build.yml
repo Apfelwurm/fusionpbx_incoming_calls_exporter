@@ -80,7 +80,7 @@ jobs:
     
     - name: debian packaging - Install dependencies
       run: sudo apt-get update && sudo apt-get install -y devscripts
-      
+
     # - name: debian packaging - replace version
     #   run: sed -i 's|%%VERSION%%|${{ steps.generate_release_tag.outputs.next_release_tag }}|g' debian/control
       
@@ -133,6 +133,7 @@ jobs:
 
     - name: debian packaging
       run: |
+        docker pull debian:12
         docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace debian:12 bash -c "
           apt-get update && apt-get install -y devscripts debhelper dh-systemd &&
           dpkg-buildpackage -us -uc

@@ -108,7 +108,7 @@ jobs:
             dch --create --package fusionpbx-incoming-calls-exporter --newversion $tag "$tag_message" 
           else
             echo "debian/changelog found, append"
-            dch --append --newversion $tag "$tag_message"
+            dch --newversion $tag "$tag_message"
           fi
           dch --release ""
         done
@@ -125,7 +125,7 @@ jobs:
       run: |
         export DEBEMAIL="${{ env.COMMITTER_EMAIL }}"
         export DEBFULLNAME="${{ env.COMMITTER_NAME }}"
-        dch --append --newversion ${{ steps.generate_release_tag.outputs.next_release_tag }} "Release ${{ steps.generate_release_tag.outputs.next_release_tag }}."
+        dch --newversion ${{ steps.generate_release_tag.outputs.next_release_tag }} "Release ${{ steps.generate_release_tag.outputs.next_release_tag }}."
         dch --release ''
         cat debian/changelog
 

@@ -134,7 +134,7 @@ jobs:
       # run: cd build && dpkg-deb -b packageroot fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
       run: |
         export DEB_COMPRESSION=xz
-        dpkg-buildpackage -us -uc 
+        dpkg-buildpackage -us -uc -Zxz
 
     - name: debian packaging - show sha265 checksum
       run: sha256sum ../fusionpbx-incoming-calls-exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb

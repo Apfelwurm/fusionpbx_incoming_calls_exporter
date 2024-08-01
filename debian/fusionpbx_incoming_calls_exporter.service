@@ -1,0 +1,9 @@
+[Unit]
+Description=fusionpbx incoming calls Exporter
+
+[Service]
+User=nobody
+ExecStart=/usr/sbin/freeswitch_exporter
+
+[Install]
+WantedBy=multi-user.target

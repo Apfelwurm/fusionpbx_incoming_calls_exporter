@@ -1,0 +1,107 @@
+on:
+  push:
+    branches: 
+      - main
+    paths:
+      - '**'
+      - '!README.md'
+
+permissions:
+    contents: write
+    packages: write
+
+name: Test, Build and publish app release
+
+jobs:
+  test:
+    name: run tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Extract Go version from go.mod
+        id: go_version
+        run: |
+          go_version=$(grep -oP 'go \K[0-9]+\.[0-9]+' go.mod)
+          echo "GO_VERSION=$go_version" >> $GITHUB_ENV
+      - name: setup go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION  }}
+      - run: go test
+
+  releases-matrix:
+    name: Release Go Binary
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux]
+        goarch: [amd64]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Extract Go version from go.mod
+      id: go_version
+      run: |
+        go_version=$(grep -oP 'go \K[0-9]+\.[0-9]+' go.mod)
+        echo "GO_VERSION=$go_version" >> $GITHUB_ENV
+    - name: Generate release tag
+      id: generate_release_tag
+      uses: amitsingh-007/next-release-tag@v4.1.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        tag_prefix: ''
+        tag_template: 'yyyy.mm.dd.i'
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
+        name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
+
+    - name: replace version
+      run: sed -i 's|%%VERSION%%|${{ steps.generate_release_tag.outputs.next_release_tag }}|g' fusionpbx_incoming_calls_exporter.go
+
+    - name: go build, show checksums and publish 
+      uses: wangyoucao577/go-release-action@v1
+      with:
+        release_tag: ${{ steps.generate_release_tag.outputs.next_release_tag }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        goversion: ${{ env.GO_VERSION  }}
+        binary_name: "fusionpbx_incoming_calls_exporter"
+        # extra_files: LICENSE README.md
+    
+    - name: debian packaging - replace version
+      run: sed -i 's|%%VERSION%%|${{ steps.generate_release_tag.outputs.next_release_tag }}|g' debian/control
+      
+    - name: debian packaging - make src dir
+      run: mkdir src
+      
+    - name: debian packaging - copy fusionpbx_incoming_calls_exporter
+      run: cp build-artifacts-*/fusionpbx_incoming_calls_exporter src/
+    - name: debian packaging
+      # run: cd build && dpkg-deb -b packageroot fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
+      run:  dpkg-buildpackage -us -uc 
+    
+    - name: debian packaging - make src dir
+      run: find -name '*.deb'
+    # - name: debian packaging - show sha265 checksum
+    #   run: sha256sum build/fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
+    # - name: debian packaging - show md5 checksum
+    #   run: md5sum build/fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
+
+            
+    # - name: Release debian
+    #   uses: softprops/action-gh-release@v1
+    #   with:
+    #     tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
+    #     name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
+    #     files: build/fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
+    
+

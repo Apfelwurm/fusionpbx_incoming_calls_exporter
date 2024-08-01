@@ -9,5 +9,4 @@ Depends: ${shlibs:Depends},
 Build-Depends: debhelper (>=9.0.0),
                dh-systemd (>= 1.5)
 Maintainer: Alexander Volz <Alexander@volzit.de>
-Description: FusionPBX Incoming Calls Exporter
- Exports FusionPBX incoming calls data to Prometheus.
+Description: Exports FusionPBX incoming gw calls data to Prometheus.

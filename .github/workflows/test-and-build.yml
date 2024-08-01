@@ -133,21 +133,16 @@ jobs:
     - name: debian packaging
       # run: cd build && dpkg-deb -b packageroot fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
       run:  dpkg-buildpackage -us -uc 
-    
-    - name: debian packaging - make src dir
-      run: find ../ -name '*.deb'
 
-
-
-    # - name: debian packaging - show sha265 checksum
-    #   run: sha256sum build/fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
-    # - name: debian packaging - show md5 checksum
-    #   run: md5sum build/fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
+    - name: debian packaging - show sha265 checksum
+      run: sha256sum ../fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
+    - name: debian packaging - show md5 checksum
+      run: md5sum ../fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
 
             
-    # - name: Release debian
-    #   uses: softprops/action-gh-release@v1
-    #   with:
-    #     tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
-    #     name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
-    #     files: build/fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
+    - name: Release debian
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
+        name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
+        files: ../fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb

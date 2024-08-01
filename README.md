@@ -22,7 +22,7 @@ Add the following job to your Prometheus configuration to scrape metrics from th
 
 ```yaml
 scrape_configs:
-  - job_name: 'fusionpbx_cdr_exporter'
+  - job_name: 'fusionpbx-incoming-calls-exporter'
     static_configs:
       - targets: ['localhost:8080'] # Adjust the target based on your setup
 ```

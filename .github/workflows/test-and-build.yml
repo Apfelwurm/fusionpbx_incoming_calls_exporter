@@ -93,10 +93,11 @@ jobs:
         git tag --sort=taggerdate | while read tag; do
           tag_date=$(git show -s --format=%ci $tag)
           tag_message=$(git for-each-ref --format='%(contents)' refs/tags/$tag | head -n 1)
-          tagger_email=$(git for-each-ref --format='%(taggeremail)' refs/tags/$tag)
-          tagger_name=$(git for-each-ref --format='%(taggername)' refs/tags/$tag)
-          export DEBEMAIL=$tagger_email
-          export DEBFULLNAME=$tagger_name
+          commit_hash=$(git rev-list -n 1 $tag)
+          committer_email=$(git show -s --format='%ae' $commit_hash)
+          committer_name=$(git show -s --format='%an' $commit_hash)
+          export DEBEMAIL=$committer_email
+          export DEBFULLNAME=$committer_name
           if [ ! -f debian/changelog ]; then
             dch --create --package fusionpbx-incoming-calls-exporter --newversion $tag "$tag_message" 
           else

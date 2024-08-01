@@ -1,1 +1,2 @@
 src/fusionpbx-incoming-calls-exporter usr/sbin
+debian/fusionpbx-incoming-calls-exporter.service lib/systemd/system/fusionpbx-incoming-calls-exporter.service

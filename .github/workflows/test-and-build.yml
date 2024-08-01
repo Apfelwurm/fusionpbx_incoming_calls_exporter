@@ -104,6 +104,7 @@ jobs:
           fi
           dch --date "$tag_date" --release ""
         done
+        cat debian/changelog
 
     - name: Get committer information
       id: committer-info

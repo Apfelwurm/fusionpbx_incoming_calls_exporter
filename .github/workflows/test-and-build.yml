@@ -76,7 +76,7 @@ jobs:
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
         goversion: ${{ env.GO_VERSION  }}
-        binary_name: "fusionpbx_incoming_calls_exporter"
+        binary_name: "fusionpbx-incoming-calls-exporter"
         # extra_files: LICENSE README.md
     
     - name: debian packaging - Install dependencies
@@ -87,8 +87,8 @@ jobs:
     - name: debian packaging - make src dir
       run: mkdir src
       
-    - name: debian packaging - copy fusionpbx_incoming_calls_exporter
-      run: cp build-artifacts-*/fusionpbx_incoming_calls_exporter src/
+    - name: debian packaging - copy fusionpbx-incoming-calls-exporter
+      run: cp build-artifacts-*/fusionpbx-incoming-calls-exporter src/
 
     - name: Create changelog
       shell: bash
@@ -135,9 +135,9 @@ jobs:
       run:  dpkg-buildpackage -us -uc 
 
     - name: debian packaging - show sha265 checksum
-      run: sha256sum ../fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
+      run: sha256sum ../fusionpbx-incoming-calls-exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
     - name: debian packaging - show md5 checksum
-      run: md5sum ../fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
+      run: md5sum ../fusionpbx-incoming-calls-exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
 
             
     - name: Release debian
@@ -145,4 +145,4 @@ jobs:
       with:
         tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
         name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
-        files: ../fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
+        files: ../fusionpbx-incoming-calls-exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb

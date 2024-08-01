@@ -1,4 +1,4 @@
-Source: fusionpbx_incoming_calls_exporter
+Source: fusionpbx-incoming-calls-exporter
 Section: utils
 Priority: optional
 Maintainer: Alexander Volz <Alexander@volzit.de>
@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 10)
 Standards-Version: 4.0.0
 Homepage: https://github.com/Apfelwurm/fusionpbx_incoming_calls_exporter
 
-Package: fusionpbx_incoming_calls_exporter
+Package: fusionpbx-incoming-calls-exporter
 Architecture: amd64
 Depends: systemd
 Description: Exports FusionPBX incoming gw calls data to Prometheus.

@@ -159,7 +159,7 @@ func main() {
 			if err := QueryDB(db, metrics); err != nil {
 				log.Printf("Error querying database: %v", err)
 			}
-			time.Sleep(10 * time.Second) // Adjust the interval as needed
+			time.Sleep(3 * time.Second) // Adjust the interval as needed
 		}
 	}()
 

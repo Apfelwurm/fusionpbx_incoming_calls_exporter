@@ -98,9 +98,9 @@ jobs:
           export DEBEMAIL=$tagger_email
           export DEBFULLNAME=$tagger_name
           if [ ! -f debian/changelog ]; then
-            dch --create --package fusionpbx-incoming-calls-exporter --newversion $tag "$tag_message" -v $tag
+            dch --create --package fusionpbx-incoming-calls-exporter --newversion $tag "$tag_message" 
           else
-            dch --append --package fusionpbx-incoming-calls-exporter --newversion $tag "$tag_message" -v $tag
+            dch --append --package fusionpbx-incoming-calls-exporter --newversion $tag "$tag_message"
           fi
           dch --date "$tag_date" --release ""
         done

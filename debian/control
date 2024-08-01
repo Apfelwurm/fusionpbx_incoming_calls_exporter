@@ -8,5 +8,5 @@ Homepage: https://github.com/Apfelwurm/fusionpbx_incoming_calls_exporter
 
 Package: fusionpbx-incoming-calls-exporter
 Architecture: amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}, systemd
+Depends: systemd
 Description: Exports FusionPBX incoming gw calls data to Prometheus.

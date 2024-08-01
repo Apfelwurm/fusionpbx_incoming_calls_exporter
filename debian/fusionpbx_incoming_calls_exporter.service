@@ -3,7 +3,7 @@ Description=fusionpbx incoming calls Exporter
 
 [Service]
 User=nobody
-ExecStart=/usr/sbin/freeswitch_exporter
+ExecStart=/usr/sbin/fusionpbx_incoming_calls_exporter
 
 [Install]
 WantedBy=multi-user.target

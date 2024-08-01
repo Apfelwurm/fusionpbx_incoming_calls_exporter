@@ -135,7 +135,10 @@ jobs:
       run:  dpkg-buildpackage -us -uc 
     
     - name: debian packaging - make src dir
-      run: find -name '*.deb'
+      run: find ../ -name '*.deb'
+
+
+
     # - name: debian packaging - show sha265 checksum
     #   run: sha256sum build/fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
     # - name: debian packaging - show md5 checksum

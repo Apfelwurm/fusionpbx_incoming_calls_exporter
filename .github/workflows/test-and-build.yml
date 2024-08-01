@@ -91,6 +91,7 @@ jobs:
     - name: Create changelog
       run: |
         git tag --sort=taggerdate | while read tag; do
+          echo "tag found"
           tag_date=$(git show -s --format=%ci $tag)
           tag_message=$(git for-each-ref --format='%(contents)' refs/tags/$tag | head -n 1)
           commit_hash=$(git rev-list -n 1 $tag)
@@ -98,13 +99,17 @@ jobs:
           committer_name=$(git show -s --format='%an' $commit_hash)
           export DEBEMAIL=$committer_email
           export DEBFULLNAME=$committer_name
+          echo "$tag_date | $tag_message | $committer_email | $committer_name "
           if [ ! -f debian/changelog ]; then
+            echo "debian/changelog not found, create"
             dch --create --package fusionpbx-incoming-calls-exporter --newversion $tag "$tag_message" 
           else
+            echo "debian/changelog found, append"
             dch --append --newversion $tag "$tag_message"
           fi
           dch --date "$tag_date" --release ""
         done
+        find .
         cat debian/changelog
 
     - name: Get committer information

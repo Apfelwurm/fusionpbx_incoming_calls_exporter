@@ -80,7 +80,7 @@ jobs:
         # extra_files: LICENSE README.md
     
     - name: debian packaging - Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y devscripts debhelper dh-systemd
+      run: sudo apt-get update && sudo apt-get install -y devscripts
     # - name: debian packaging - replace version
     #   run: sed -i 's|%%VERSION%%|${{ steps.generate_release_tag.outputs.next_release_tag }}|g' debian/control
       
@@ -152,4 +152,3 @@ jobs:
     #     tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
     #     name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
     #     files: build/fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
-    

@@ -110,7 +110,7 @@ jobs:
             echo "debian/changelog found, append"
             dch --append --newversion $tag "$tag_message"
           fi
-          dch --date "$tag_date" --release ""
+          dch --release ""
         done
         find .
         cat debian/changelog

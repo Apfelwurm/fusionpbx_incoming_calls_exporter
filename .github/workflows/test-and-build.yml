@@ -88,6 +88,23 @@ jobs:
     - name: debian packaging - copy fusionpbx_incoming_calls_exporter
       run: cp build-artifacts-*/fusionpbx_incoming_calls_exporter src/
 
+    - name: Create changelog
+      run: |
+        git tag --sort=taggerdate | while read tag; do
+          tag_date=$(git show -s --format=%ci $tag)
+          tag_message=$(git for-each-ref --format='%(contents)' refs/tags/$tag | head -n 1)
+          tagger_email=$(git for-each-ref --format='%(taggeremail)' refs/tags/$tag)
+          tagger_name=$(git for-each-ref --format='%(taggername)' refs/tags/$tag)
+          export DEBEMAIL=$tagger_email
+          export DEBFULLNAME=$tagger_name
+          if [ ! -f debian/changelog ]; then
+            dch --create --package fusionpbx-incoming-calls-exporter --newversion $tag "$tag_message" -v $tag
+          else
+            dch --append --package fusionpbx-incoming-calls-exporter --newversion $tag "$tag_message" -v $tag
+          fi
+          dch --date "$tag_date" --release ""
+        done
+
     - name: Get committer information
       id: committer-info
       run: |
@@ -98,7 +115,7 @@ jobs:
       run: |
         export DEBEMAIL="${{ env.COMMITTER_EMAIL }}"
         export DEBFULLNAME="${{ env.COMMITTER_NAME }}"
-        dch --create --package fusionpbx-incoming-calls-exporter --newversion ${{ steps.generate_release_tag.outputs.next_release_tag }} "Release ${{ steps.generate_release_tag.outputs.next_release_tag }}."
+        dch --append --package fusionpbx-incoming-calls-exporter --newversion ${{ steps.generate_release_tag.outputs.next_release_tag }} "Release ${{ steps.generate_release_tag.outputs.next_release_tag }}."
         dch --release ''
         cat debian/changelog
 

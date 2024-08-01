@@ -152,3 +152,4 @@ jobs:
     #     tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
     #     name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
     #     files: build/fusionpbx_incoming_calls_exporter_${{ steps.generate_release_tag.outputs.next_release_tag }}_amd64.deb
+    

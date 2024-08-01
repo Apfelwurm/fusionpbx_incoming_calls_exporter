@@ -7,9 +7,13 @@ This is a prometheus exporter for fusionpbx, that reports the current sum of the
 
 Download the latest release [here](https://github.com/Apfelwurm/fusionpbx_incoming_calls_exporter/releases/latest).
 
-You can find a deb package there which can be installed by  `dpkg -i fusionpbx_incoming_calls_exporter_*_amd64.deb` on debian.
+You can find a deb package there which can be installed by  `dpkg -i fusionpbx-incoming-calls-exporter_*_amd64.deb` on debian.
 
-Alternativeley there is also a tar.gz file that can be unpacked using `tar xvf fusionpbx_incoming_calls_exporter-*-linux-amd64.tar.gz`. Make sure to set up some kind of Service yourself in that case.
+Alternativeley there is also a tar.gz file that can be unpacked using `tar xvf fusionpbx-incoming-calls-exporter-*-linux-amd64.tar.gz`. Make sure to set up some kind of Service yourself in that case.
+
+And ofc, if you have the default FusionPBX Installation you have to allow your prometheus to access the exporter. For example:
+
+`iptables -A INPUT -p tcp -m tcp --dport 8080 -s 10.10.24.22/32 -j ACCEPT`
 
 
 ## Prometheus Integration

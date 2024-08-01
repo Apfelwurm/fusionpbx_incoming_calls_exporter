@@ -89,6 +89,7 @@ jobs:
       run: cp build-artifacts-*/fusionpbx_incoming_calls_exporter src/
 
     - name: Create changelog
+      shell: bash
       run: |
         git tag --sort=taggerdate | while read tag; do
           echo "tag found"

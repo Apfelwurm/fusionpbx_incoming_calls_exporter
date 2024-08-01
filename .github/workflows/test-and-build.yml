@@ -125,7 +125,8 @@ jobs:
       run: |
         export DEBEMAIL="${{ env.COMMITTER_EMAIL }}"
         export DEBFULLNAME="${{ env.COMMITTER_NAME }}"
-        dch --newversion ${{ steps.generate_release_tag.outputs.next_release_tag }} "Release ${{ steps.generate_release_tag.outputs.next_release_tag }}."
+        COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+        dch --newversion ${{ steps.generate_release_tag.outputs.next_release_tag }} "$COMMIT_MESSAGE"
         dch --release ''
         cat debian/changelog
 

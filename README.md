@@ -27,6 +27,10 @@ scrape_configs:
       - targets: ['localhost:8080'] # Adjust the target based on your setup
 ```
 
+## Grafana Integration
+
+You can find an example dashboard for grafana in the file `fusionpbx_incoming_calls_grafana_dashboard.json`
+
 ## Metrics
 
 The following Prometheus metrics are exposed:

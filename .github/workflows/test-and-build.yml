@@ -22,7 +22,7 @@ jobs:
   #       os: [ubuntu-latest]
   #   steps:
   #     - name: Checkout
-  #       uses: actions/checkout@v4
+  #       uses: actions/checkout@v7
   #     - name: Extract Go version from go.mod
   #       id: go_version
   #       run: |
@@ -43,7 +43,7 @@ jobs:
         goos: [linux]
         goarch: [amd64]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0
     - name: Extract Go version from go.mod
@@ -60,7 +60,7 @@ jobs:
         tag_template: 'yyyy.mm.dd.i'
 
     - name: Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v3.0.2
       with:
         tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
         name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
@@ -142,7 +142,7 @@ jobs:
 
             
     - name: Release debian
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v3.0.2
       with:
         tag_name: ${{ steps.generate_release_tag.outputs.next_release_tag }}
         name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}

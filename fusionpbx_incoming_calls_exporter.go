@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -26,8 +27,9 @@ type Config struct {
 
 // Metrics struct to hold the Prometheus metrics
 type Metrics struct {
-	IndividualCounts *prometheus.GaugeVec
-	TotalCount       prometheus.Gauge
+	IndividualCounts  *prometheus.GaugeVec
+	TotalCount        prometheus.Gauge
+	knownDestinations map[string]struct{}
 }
 
 // ReadConfig reads the database configuration from the specified file
@@ -46,17 +48,18 @@ func ReadConfig(filePath string) (Config, error) {
 		line := scanner.Text()
 		matches := re.FindStringSubmatch(line)
 		if len(matches) == 3 {
+			value := strings.TrimSpace(matches[2])
 			switch matches[1] {
 			case "host":
-				config.Host = matches[2]
+				config.Host = value
 			case "port":
-				config.Port = matches[2]
+				config.Port = value
 			case "name":
-				config.Name = matches[2]
+				config.Name = value
 			case "username":
-				config.Username = matches[2]
+				config.Username = value
 			case "password":
-				config.Password = matches[2]
+				config.Password = value
 			}
 		}
 	}
@@ -66,6 +69,12 @@ func ReadConfig(filePath string) (Config, error) {
 	}
 
 	return config, nil
+}
+
+func escapeConnParam(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
+	s = strings.ReplaceAll(s, `'`, `\'`)
+	return "'" + s + "'"
 }
 
 // NewMetrics creates new Prometheus metrics
@@ -84,44 +93,43 @@ func NewMetrics() *Metrics {
 				Help: "Total count of calls to all gateways",
 			},
 		),
+		knownDestinations: make(map[string]struct{}),
 	}
 }
 
 // QueryDB queries the database and updates the metrics
 func QueryDB(db *sql.DB, metrics *Metrics) error {
-	// Query for individual gateways
-	rows, err := db.Query("SELECT DISTINCT caller_destination FROM v_xml_cdr WHERE caller_destination LIKE 'gw+%'")
+	rows, err := db.Query("SELECT caller_destination, COUNT(*) FROM v_xml_cdr WHERE caller_destination LIKE 'gw+%' GROUP BY caller_destination")
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 
-	destinations := []string{}
+	currentDestinations := make(map[string]struct{})
+	var totalCount int
 	for rows.Next() {
 		var destination string
-		if err := rows.Scan(&destination); err != nil {
+		var count int
+		if err := rows.Scan(&destination, &count); err != nil {
 			return err
 		}
-		destinations = append(destinations, destination)
+		currentDestinations[destination] = struct{}{}
+		metrics.IndividualCounts.With(prometheus.Labels{"destination": destination}).Set(float64(count))
+		totalCount += count
 	}
 	if err := rows.Err(); err != nil {
 		return err
 	}
 
-	for _, destination := range destinations {
-		var count int
-		query := fmt.Sprintf("SELECT COUNT(*) FROM v_xml_cdr WHERE caller_destination LIKE '%s'", destination)
-		if err := db.QueryRow(query).Scan(&count); err != nil {
-			return err
+	// remove gauges for destinations that no longer appear so stale series
+	// don't linger forever at their last known value
+	for destination := range metrics.knownDestinations {
+		if _, ok := currentDestinations[destination]; !ok {
+			metrics.IndividualCounts.Delete(prometheus.Labels{"destination": destination})
 		}
-		metrics.IndividualCounts.With(prometheus.Labels{"destination": destination}).Set(float64(count))
 	}
+	metrics.knownDestinations = currentDestinations
 
-	// Query for all gateways
-	var totalCount int
-	if err := db.QueryRow("SELECT COUNT(*) FROM v_xml_cdr WHERE caller_destination LIKE 'gw+%'").Scan(&totalCount); err != nil {
-		return err
-	}
 	metrics.TotalCount.Set(float64(totalCount))
 
 	return nil
@@ -141,7 +149,8 @@ func main() {
 
 	// Open database connection
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s",
-		config.Host, config.Port, config.Username, config.Password, config.Name)
+		escapeConnParam(config.Host), escapeConnParam(config.Port), escapeConnParam(config.Username),
+		escapeConnParam(config.Password), escapeConnParam(config.Name))
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
